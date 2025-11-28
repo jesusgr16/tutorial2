@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutorial de Desarrollo de Apps Móviles</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#4caf50">
+
+<style>
+    .image-container {
+       margin:20px 0;
+       text-align:center;
+    }
+
+    .content-image {
+       max-width:100%;
+       height: auto;
+       border-radius: 8px;
+       box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .image-caption {
+       font-style: italic;
+       color: #4caf50;
+       margin-top: 8px;
+       font-size: 14px;
+    }
+
+    :root {
+        --primary: #4caf50;         /* Verde principal */
+        --primary-dark: #388e3c;    /* Verde más oscuro */
+        --secondary: #81c784;       /* Verde claro para detalles */
+        --dark: #333;               /* Texto oscuro */
+        --light: #e8f5e9;           /* Fondo claro */
+        --gray: #e0e0e0;            /* Gris neutro */
+        --white: #ffffff;            /* Blanco */
+        --shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+        color: var(--dark);
+        line-height: 1.6;
+        min-height: 100vh;
+    }
+
+    .container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    header {
+        background: var(--primary);
+        color: var(--white);
+        padding: 20px;
+        text-align: center;
+        border-radius: 12px 12px 0 0;
+        box-shadow: var(--shadow);
+        margin-bottom: 20px;
+    }
+
+    h1 {
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+
+    h2 {
+        font-size: 24px;
+        margin-bottom: 15px;
+        color: var(--primary);
+        border-bottom: 2px solid var(--primary);
+        padding-bottom: 8px;
+    }
+
+    h3 {
+        font-size: 20px;
+        margin: 15px 0 10px;
+        color: var(--primary-dark);
+    }
+
+    .card {
+        background: var(--white);
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+        padding: 25px;
+        margin-bottom: 20px;
+        transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+    }
+
+    .section {
+        display: none;
+    }
+
+    .active {
+        display: block;
+        animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .nav-buttons {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+    }
+
+    button {
+        background: var(--primary);
+        color: var(--white);
+        border: none;
+        border-radius: 6px;
+        padding: 12px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    button:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+    }
+
+    button.secundario {
+        background: var(--gray);
+        color: var(--dark);
+    }
+
+    button.secundario:hover {
+        background: #a5d6a7;
+    }
+
+    .btn-icon {
+        margin-right: 8px;
+    }
+
+    input {
+        width: 100%;
+        padding: 12px;
+        margin: 10px 0;
+        border: 1px solid var(--gray);
+        border-radius: 6px;
+        font-size: 16px;
+        transition: border 0.3s ease;
+    }
+
+    input:focus {
+        border-color: var(--primary);
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(76,175,80,0.2);
+    }
+
+    .msg {
+        padding: 10px;
+        border-radius: 6px;
+        margin-top: 10px;
+        text-align: center;
+    }
+
+    .error {
+        background: #e8f5e9;
+        color: #2e7d32;
+        border: 1px solid #a5d6a7;
+    }
+
+    .success {
+        background: #f1f8e9;
+        color: #4caf50;
+        border: 1px solid #c8e6c9;
+    }
+
+    .menu-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+    }
+
+    .menu-item {
+        background: var(--white);
+        border-radius: 10px;
+        padding: 20px;
+        text-align: center;
+        box-shadow: var(--shadow);
+        transition: all 0.3s ease;
+        cursor: pointer;
+        border-left: 4px solid var(--primary);
+    }
+
+    .menu-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    }
+
+    .menu-item i {
+        font-size: 32px;
+        color: var(--primary);
+        margin-bottom: 15px;
+    }
+
+    .content-section {
+        margin-bottom: 25px;
+    }
+
+    .content-section p {
+        margin-bottom: 15px;
+    }
+
+    .content-section ul, .content-section ol {
+        margin-left: 20px;
+        margin-bottom: 15px;
+    }
+
+    .content-section li {
+        margin-bottom: 8px;
+    }
+
+    .image-placeholder {
+        background: var(--gray);
+        height: 200px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 15px 0;
+        color: #777;
+    }
+
+    .references {
+        background: #f1f8e9;
+        padding: 15px;
+        border-radius: 8px;
+        margin-top: 20px;
+    }
+
+    .references h3 {
+        margin-top: 0;
+    }
+
+    .references a {
+        color: var(--primary);
+        text-decoration: none;
+    }
+
+    .references a:hover {
+        text-decoration: underline;
+    }
+
+    .progress-bar {
+        height: 6px;
+        background: var(--gray);
+        border-radius: 3px;
+        margin: 20px 0;
+        overflow: hidden;
+    }
+
+    .progress {
+        height: 100%;
+        background: var(--primary);
+        width: 0%;
+        transition: width 0.5s ease;
+    }
+
+    .user-info {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+        padding: 15px;
+        background: var(--white);
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+    }
+
+    .user-info span {
+        font-weight: 600;
+        color: var(--primary);
+    }
+
+    @media (max-width: 768px) {
+        .container {
+            padding: 10px;
+        }
+
+        .menu-grid {
+            grid-template-columns: 1fr;
+        }
+
+        h1 {
+            font-size: 24px;
+        }
+
+        h2 {
+            font-size: 20px;
+        }
+    }
+</style>
+
+
+</head>
+
+<body>
+<div class="container">
+    <!-- Encabezado -->
+    <header>
+        <h1><i class="fas fa-mobile-alt btn-icon"></i> Tutorial de Desarrollo de Apps Móviles</h1>
+        <p>Tutorial completo para crear aplicaciones móviles </p>
+    </header>
+
+    <!-- Barra de progreso -->
+    <div class="progress-bar">
+        <div class="progress" id="progress"></div>
+    </div>
+
+    <!-- ******************* PANTALLA INICIO ******************* -->
+    <div id="inicio" class="section active">
+        <div class="card">
+            <h2>Bienvenido</h2>
+            <p>Tutorial sobre Desarrollo de Aplicaciones Móviles.</p>
+            <div class="nav-buttons">
+                <button onclick="mostrarSeccion('login')">
+                    <i class="fas fa-sign-in-alt btn-icon"></i> Iniciar Sesión
+                </button>
+                <button onclick="mostrarSeccion('registro')" class="secundario">
+                    <i class="fas fa-user-plus btn-icon"></i> Registrarse
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ******************* LOGIN ******************* -->
+    <div id="login" class="section">
+        <div class="card">
+            <h2><i class="fas fa-sign-in-alt btn-icon"></i> Iniciar Sesión</h2>
+            <input id="loginUser" type="text" placeholder="Usuario">
+            <input id="loginPass" type="password" placeholder="Contraseña">
+            <button onclick="login()">
+                <i class="fas fa-unlock-alt btn-icon"></i> Entrar
+            </button>
+            <div id="loginMsg" class="msg"></div>
+            <div class="nav-buttons">
+                <button onclick="mostrarSeccion('inicio')" class="secundario">
+                    <i class="fas fa-arrow-left btn-icon"></i> Volver
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="registro" class="section">
+        <div class="card">
+            <h2><i class="fas fa-user-plus btn-icon"></i> Crear Cuenta</h2>
+            <input id="regUser" type="text" placeholder="Usuario">
+            <input id="regPass" type="password" placeholder="Contraseña">
+            <button onclick="registrar()">
+                <i class="fas fa-user-check btn-icon"></i> Registrar
+            </button>
+            <div id="regMsg" class="msg"></div>
+            <div class="nav-buttons">
+                <button onclick="mostrarSeccion('inicio')" class="secundario">
+                    <i class="fas fa-arrow-left btn-icon"></i> Volver
+                </button>
+            </div>
+        </div>
+    </div>
+
+   
+    <div id="menu" class="section">
+        <div class="user-info">
+            <div>Bienvenido, <span id="nombreUsuario">Usuario</span></div>
+            <button onclick="cerrarSesion()" class="secundario">
+                <i class="fas fa-sign-out-alt btn-icon"></i> Cerrar Sesión
+            </button>
+        </div>
+
+        <div class="card">
+            <h2><i class="fas fa-bars btn-icon"></i> Menú Principal</h2>
+            <p>Selecciona un tema para ver:</p>
+
+            <div class="menu-grid">
+                <div class="menu-item" onclick="mostrarSeccion('tema1')">
+                    <i class="fas fa-microchip"></i>
+                    <h3>Gestión de Sensores</h3>
+                    <p>Tipos y gestión de sensores en dispositivos móviles</p>
+                </div>
+
+                <div class="menu-item" onclick="mostrarSeccion('tema2')">
+                    <i class="fas fa-bell"></i>
+                    <h3>Servicios y Notificaciones</h3>
+                    <p>Tareas en segundo plano y notificaciones</p>
+                </div>
+
+                <div class="menu-item" onclick="mostrarSeccion('tema3')">
+                    <i class="fas fa-toolbox"></i>
+                    <h3>Librerías y Toolkits</h3>
+                    <p>Herramientas para desarrollo móvil</p>
+                </div>
+
+                <div class="menu-item" onclick="mostrarSeccion('tema4')">
+                    <i class="fas fa-shield-alt"></i>
+                    <h3>Depuración y Seguridad</h3>
+                    <p>Herramientas y mecanismos de seguridad</p>
+                </div>
+
+                <div class="menu-item" onclick="mostrarSeccion('tema5')">
+                    <i class="fas fa-box"></i>
+                    <h3>Empaquetado y Despliegue</h3>
+                    <p>Tipos y herramientas de empaquetado</p>
+                </div>
+
+                <div class="menu-item" onclick="mostrarSeccion('tema6')">
+                    <i class="fas fa-store"></i>
+                    <h3>Plataformas de Distribución</h3>
+                    <p>Canales y tipos de pruebas</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+  
+    <div id="tema1" class="section">
+        <div class="card">
+            <h2><i class="fas fa-microchip btn-icon"></i> Gestión de Sensores</h2>
+
+            <div class="content-section">
+                <h3>Tipos de Sensores en Dispositivos Móviles</h3>
+                <p>Los dispositivos móviles modernos incluyen una variedad de sensores que permiten a las aplicaciones interactuar con el entorno:</p>
+                <ul>
+                    <li><strong>Acelerómetro:</strong> Mide la aceleración del dispositivo en tres ejes</li>
+                    <li><strong>Giroscopio:</strong> Detecta la orientación y rotación del dispositivo</li>
+                    <li><strong>Magnetómetro:</strong> Funciona como una brújula digital</li>
+                    <li><strong>Sensor de proximidad:</strong> Detecta objetos cercanos al dispositivo</li>
+                    <li><strong>Sensor de luz ambiental:</strong> Mide la intensidad de la luz</li>
+                    <li><strong>GPS:</strong> Proporciona ubicación geográfica</li>
+                    <li><strong>Sensor de huellas dactilares:</strong> Para autenticación biométrica</li>
+                </ul>
+            </div>
+
+            <div class="content-section">
+                <h3>Proceso de Gestión de Sensores</h3>
+                <p>La gestión de sensores implica tres pasos principales:</p>
+                <ol>
+                    <li><strong>Habilitación:</strong> Solicitar permisos y verificar disponibilidad del sensor</li>
+                    <li><strong>Obtención:</strong> Configurar parámetros y comenzar a recibir datos</li>
+                    <li><strong>Procesamiento:</strong> Interpretar y utilizar los datos del sensor</li>
+                </ol>
+
+                <div class="image-container">
+                    <img src="R.jpeg" alt="Gestion de sensores" class="content-image">
+                    <p class="image-caption">Figura 1: Gestion de sensores</p>
+                </div>
+            </div>
+
+            <div class="content-section">
+                <h3>Ejemplo de Código</h3>
+                <p>En Android, puedes acceder al sensor de aceleración de la siguiente manera:</p>
+                <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; font-family: monospace; margin: 15px 0;">
+                    SensorManager sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);<br>
+                    Sensor accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);<br>
+                    sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+                </div>
+            </div>
+
+            <div class="references">
+                <h3>Referencias</h3>
+                <ul>
+                    <li><a href="https://youtu.be/fVT4kg8kOIM?si=FFi5lIxSnq_sdKFq " target="_blank">Android Sensors Overview</a></li>
+                    <li><a href="https://developer.android.com/develop/sensors-and-location/sensors/sensors_overview?hl=es-419 " target="_blank">Apple Core Motion Framework</a></li>
+                </ul>
+            </div>
+
+            <div class="nav-buttons">
+                <button onclick="mostrarSeccion('menu')" class="secundario">
+                    <i class="fas fa-arrow-left btn-icon"></i> Volver al Menú
+                </button>
+                <button onclick="mostrarSeccion('tema2')">
+                    Siguiente <i class="fas fa-arrow-right btn-icon"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="tema2" class="section">
+        <div class="card">
+            <h2><i class="fas fa-bell btn-icon"></i> Servicios y Notificaciones en App</h2>
+
+            <div class="content-section">
+                <h3>Tareas en Segundo Plano</h3>
+                <p>Las aplicaciones móviles pueden ejecutar tareas en segundo plano para realizar operaciones sin interrumpir la experiencia del usuario:</p>
+                <ul>
+                    <li><strong>Servicios:</strong> Componentes que ejecutan operaciones prolongadas en segundo plano</li>
+                    <li><strong>WorkManager:</strong> Para tareas deferibles que deben ejecutarse de manera confiable</li>
+                    <li><strong>AlarmManager:</strong> Para programar tareas en momentos específicos</li>
+                    <li><strong>JobScheduler:</strong> Para optimizar la ejecución de tareas según condiciones del sistema</li>
+                </ul>
+            </div>
+
+            <div class="content-section">
+                <h3>Tratamiento de Notificaciones</h3>
+                <p>Las notificaciones permiten a las aplicaciones comunicarse con los usuarios sin interrumpir su flujo de trabajo actual:</p>
+                <ol>
+                    <li><strong>Creación:</strong> Definir contenido, prioridad y acciones</li>
+                    <li><strong>Personalización:</strong> Adaptar estilo y comportamiento</li>
+                    <li><strong>Entrega:</strong> Mostrar la notificación al usuario</li>
+                    <li><strong>Gestión:</strong> Manejar interacciones y actualizaciones</li>
+                </ol>
+
+                <div class="image-container">
+                    <img src="noti.webp" alt="Notificaciones" class="content-image">
+                    <p class="image-caption">Figura 1: Notificaaciones-push</p>
+                </div>
+            </div>
+
+            <div class="content-section">
+                <h3>Implementación de Proveedores de Contenido</h3>
+                <p>Los Content Providers permiten compartir datos entre aplicaciones:</p>
+                <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; font-family: monospace; margin: 15px 0;">
+                    public class MyContentProvider extends ContentProvider {<br>
+                    &nbsp;&nbsp;@Override<br>
+                    &nbsp;&nbsp;public boolean onCreate() {<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;// Inicializar el proveedor<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;return true;<br>
+                    &nbsp;&nbsp;}<br>
+                    &nbsp;&nbsp;// Implementar métodos para consultar, insertar, actualizar y eliminar datos<br>
+                    }
+                </div>
+            </div>
+
+            <div class="content-section">
+                <h3>Servicios de Cómputo en la Nube</h3>
+                <p>Plataformas populares para desarrollo móvil:</p>
+                <ul>
+                    <li><strong>Firebase:</strong> Backend-as-a-Service de Google</li>
+                    <li><strong>AWS Amplify:</strong> Conjunto de herramientas de AWS para desarrollo móvil</li>
+                    <li><strong>Azure Mobile Apps:</strong> Servicio de Microsoft para backends móviles</li>
+                    <li><strong>Back4App:</strong> Plataforma basada en Parse Server</li>
+                </ul>
+            </div>
+
+            <div class="references">
+                <h3>Referencias</h3>
+                <ul>
+                    <li><a href="https://developer.android.com/develop/ui/views/notifications?hl=es-419 " target="_blank">Android Services</a></li>
+                    <li><a href="https://youtu.be/Br7CLi54RSY?si=ftFmS3pocVzE2Vkw " target="_blank">Android Content Providers</a></li>
+
+                </ul>
+            </div>
+
+            <div class="nav-buttons">
+                <button onclick="mostrarSeccion('tema1')" class="secundario">
+                    <i class="fas fa-arrow-left btn-icon"></i> Anterior
+                </button>
+                <button onclick="mostrarSeccion('tema3')">
+                    Siguiente <i class="fas fa-arrow-right btn-icon"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TEMA 3: Librerías y Toolkits -->
+    <div id="tema3" class="section">
+        <div class="card">
+            <h2><i class="fas fa-toolbox btn-icon"></i> Librerías y Toolkits para Desarrollo Móvil</h2>
+
+            <div class="content-section">
+                <h3>Librerías Especializadas para Aplicaciones Móviles</h3>
+                <p>Existen numerosas librerías que facilitan el desarrollo de aplicaciones móviles:</p>
+
+                <h4>Para Interfaz de Usuario</h4>
+                <ul>
+                    <li><strong>Lottie:</strong> Animaciones vectoriales</li>
+                    <li><strong>Glide/Picasso:</strong> Carga y caché de imágenes</li>
+                    <li><strong>Material Components:</strong> Implementación de Material Design</li>
+                </ul>
+
+                <h4>Para Networking</h4>
+                <ul>
+                    <li><strong>Retrofit:</strong> Cliente HTTP type-safe para Android</li>
+                    <li><strong>OkHttp:</strong> Cliente HTTP eficiente</li>
+                    <li><strong>Volley:</strong> Biblioteca de networking de Google</li>
+                </ul>
+
+                <h4>Para Base de Datos</h4>
+                <ul>
+                    <li><strong>Room:</strong> Capa de abstracción sobre SQLite</li>
+                    <li><strong>Realm:</strong> Base de datos móvil alternativa</li>
+                </ul>
+
+                <h4>Para Arquitectura</h4>
+                <ul>
+                    <li><strong>RxJava/RxAndroid:</strong> Programación reactiva</li>
+                    <li><strong>Dagger/Hilt:</strong> Inyección de dependencias</li>
+                    <li><strong>LiveData/ViewModel:</strong> Componentes de Architecture Components</li>
+                </ul>
+            </div>
+
+            <div class="content-section">
+                <h3>Frameworks de Desarrollo Multiplataforma</h3>
+                <p>Herramientas para desarrollar aplicaciones para múltiples plataformas:</p>
+                <ul>
+                    <li><strong>React Native:</strong> Framework de Facebook usando JavaScript</li>
+                    <li><strong>Flutter:</strong> Framework de Google usando Dart</li>
+                    <li><strong>Xamarin:</strong> Framework de Microsoft usando C#</li>
+                    <li><strong>Ionic:</strong> Framework basado en tecnologías web</li>
+                </ul>
+
+                <div class="image-container">
+                    <img src="OIP.webp" alt="Librerías y Toolkits" class="content-image">
+                    <p class="image-caption">Figura 1: Librerías y Toolkits para Desarrollo Móvil</p>
+                </div>
+            </div>
+
+            <div class="references">
+                <h3>Referencias</h3>
+                <ul>
+                    <li><a href="https://www.finoit.com/blog/top-mobile-app-development-tools/ " target="_blank">Must-Have Android Libraries</a></li>
+                    <li><a href="https://www.finoit.com/blog/top-mobile-app-development-tools/ " target="_blank">Flutter Framework</a></li>
+
+                </ul>
+            </div>
+
+            <div class="nav-buttons">
+                <button onclick="mostrarSeccion('tema2')" class="secundario">
+                    <i class="fas fa-arrow-left btn-icon"></i> Anterior
+                </button>
+                <button onclick="mostrarSeccion('tema4')">
+                    Siguiente <i class="fas fa-arrow-right btn-icon"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TEMA 4: Depuración y Seguridad -->
+    <div id="tema4" class="section">
+        <div class="card">
+            <h2><i class="fas fa-shield-alt btn-icon"></i> Depuración y Seguridad en el Desarrollo de Apps</h2>
+
+            <div class="content-section">
+                <h3>Herramientas de Depuración</h3>
+                <p>Para identificar y corregir errores en aplicaciones móviles:</p>
+                <ul>
+                    <li><strong>Android Studio Debugger:</strong> Depurador integrado en el IDE oficial</li>
+                    <li><strong>Xcode Debugger:</strong> Para desarrollo iOS</li>
+                    <li><strong>Chrome DevTools:</strong> Para depurar aplicaciones web y hybrid</li>
+                    <li><strong>Stetho:</strong> Puente de depuración para aplicaciones Android</li>
+                    <li><strong>Charles Proxy:</strong> Para inspeccionar tráfico de red</li>
+                </ul>
+            </div>
+
+            <div class="content-section">
+                <h3>Uso de Registros del Sistema</h3>
+                <p>Los logs son esenciales para identificar defectos:</p>
+                <ol>
+                    <li><strong>Configuración:</strong> Definir niveles de log (VERBOSE, DEBUG, INFO, WARN, ERROR)</li>
+                    <li><strong>Inserción:</strong> Agregar mensajes de log en puntos estratégicos del código</li>
+                    <li><strong>Filtrado:</strong> Usar herramientas como Logcat para filtrar y buscar logs</li>
+                    <li><strong>Análisis:</strong> Interpretar los logs para identificar patrones de error</li>
+                </ol>
+
+                <div class="image-container">
+                    <img src="htrh.webp" alt="Depuración y seguridad" class="content-image">
+                    <p class="image-caption">Figura 1: Depuración y Seguridad</p>
+                </div>
+            </div>
+
+            <div class="content-section">
+                <h3>Proceso de Refactorización de Código</h3>
+                <p>Mejorar la estructura del código sin cambiar su comportamiento:</p>
+                <ul>
+                    <li><strong>Identificación:</strong> Detectar código duplicado, métodos largos y clases grandes</li>
+                    <li><strong>Planificación:</strong> Definir estrategias de refactorización</li>
+                    <li><strong>Ejecución:</strong> Aplicar técnicas como extracción de métodos, renombrado, etc.</li>
+                    <li><strong>Verificación:</strong> Ejecutar pruebas para asegurar que el comportamiento no cambió</li>
+                </ul>
+            </div>
+
+            <div class="content-section">
+                <h3>Mecanismos de Seguridad en Apps</h3>
+                <p>Protección de aplicaciones y datos del usuario:</p>
+                <ul>
+                    <li><strong>Permisos:</strong> Solicitar solo los permisos necesarios y explicar su uso</li>
+                    <li><strong>Archivos de configuración:</strong> Proteger información sensible en build.gradle, Info.plist, etc.</li>
+                    <li><strong>Cifrado:</strong> Usar Android Keystore, iOS Keychain para almacenar datos sensibles</li>
+                    <li><strong>Autenticación:</strong> Implementar OAuth, JWT para servicios externos</li>
+                    <li><strong>SSL Pinning:</strong> Prevenir ataques man-in-the-middle</li>
+                </ul>
+            </div>
+
+            <div class="references">
+                <h3>Referencias</h3>
+                <ul>
+                    <li><a href="https://developer.android.com/studio/debug?hl=es-419 " target="_blank">Android Debugging</a></li>
+                    <li><a href="https://www.ibm.com/mx-es/think/topics/application-security " target="_blank">Android Security Best Practices</a></li>
+
+                </ul>
+            </div>
+
+            <div class="nav-buttons">
+                <button onclick="mostrarSeccion('tema3')" class="secundario">
+                    <i class="fas fa-arrow-left btn-icon"></i> Anterior
+                </button>
+                <button onclick="mostrarSeccion('tema5')">
+                    Siguiente <i class="fas fa-arrow-right btn-icon"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TEMA 5: Empaquetado y Despliegue -->
+    <div id="tema5" class="section">
+        <div class="card">
+            <h2><i class="fas fa-box btn-icon"></i> Herramientas para Empaquetado y Despliegue</h2>
+
+            <div class="content-section">
+                <h3>Tipos de Empaquetado en App</h3>
+                <p>Diferentes formatos para distribuir aplicaciones:</p>
+                <ul>
+                    <li><strong>APK (Android Package):</strong> Formato tradicional para Android</li>
+                    <li><strong>AAB (Android App Bundle):</strong> Nuevo formato que permite publicación optimizada</li>
+                    <li><strong>IPA (iOS App Store Package):</strong> Formato para distribución en iOS</li>
+                    <li><strong>Formatos multiplataforma:</strong> Archivos específicos para React Native, Flutter, etc.</li>
+                </ul>
+            </div>
+
+            <div class="content-section">
+                <h3>Herramientas y Procedimientos de Empaquetado</h3>
+                <p>Proceso para preparar una aplicación para distribución:</p>
+                <ol>
+                    <li><strong>Configuración de build:</strong> Definir versionCode, versionName, y configuraciones de firma</li>
+                    <li><strong>Minificación y ofuscación:</strong> Reducir tamaño y proteger código con R8/ProGuard</li>
+                    <li><strong>Generación de variantes:</strong> Crear builds para diferentes entornos (debug, release)</li>
+                    <li><strong>Firma:</strong> Firmar la aplicación con certificados digitales</li>
+                    <li><strong>Empaquetado final:</strong> Generar APK/AAB o IPA listos para distribución</li>
+                </ol>
+
+                <div class="image-container">
+                    <img src="hello.avif" alt="Empaquetado y Despliegue" class="content-image">
+                    <p class="image-caption">Figura 1: Empaquetado y Despliegue</p>
+                </div>
+            </div>
+
+            <div class="content-section">
+                <h3>Diferenciación de Herramientas de Empaquetado</h3>
+                <p>Cada plataforma tiene sus herramientas específicas:</p>
+                <ul>
+                    <li><strong>Android:</strong> Gradle, Android Studio Build System</li>
+                    <li><strong>iOS:</strong> Xcode Build System, Fastlane</li>
+                    <li><strong>Multiplataforma:</strong> Flutter CLI, React Native CLI</li>
+                    <li><strong>Automatización:</strong> Fastlane, Bitrise, GitHub Actions</li>
+                </ul>
+            </div>
+
+            <div class="content-section">
+                <h3>Herramientas de Despliegue de App</h3>
+                <p>Para distribuir aplicaciones a usuarios de prueba o tiendas oficiales:</p>
+                <ul>
+                    <li><strong>Google Play Console:</strong> Para publicar en Google Play Store</li>
+                    <li><strong>App Store Connect:</strong> Para publicar en Apple App Store</li>
+                    <li><strong>TestFlight:</strong> Plataforma de Apple para distribución de pruebas</li>
+                    <li><strong>Firebase App Distribution:</strong> Para distribuir versiones de prueba</li>
+                    <li><strong>Microsoft App Center:</strong> Para distribución y testing</li>
+                </ul>
+            </div>
+
+            <div class="references">
+                <h3>Referencias</h3>
+                <ul>
+                    <li><a href="https://developer.android.com/studio/build" target="_blank">Android Build System</a></li>
+                    <li><a href="https://developer.android.com/guide/app-bundle" target="_blank">Android App Bundle</a></li>
+
+                </ul>
+            </div>
+
+            <div class="nav-buttons">
+                <button onclick="mostrarSeccion('tema4')" class="secundario">
+                    <i class="fas fa-arrow-left btn-icon"></i> Anterior
+                </button>
+                <button onclick="mostrarSeccion('tema6')">
+                    Siguiente <i class="fas fa-arrow-right btn-icon"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TEMA 6: Plataformas y Canales de Distribución -->
+    <div id="tema6" class="section">
+        <div class="card">
+            <h2><i class="fas fa-store btn-icon"></i> Plataformas y Canales de Distribución</h2>
+
+            <div class="content-section">
+                <h3>Plataformas de Distribución de App</h3>
+                <p>Principales tiendas de aplicaciones y sus requisitos:</p>
+
+                <h4>Google Play Store</h4>
+                <ul>
+                    <li><strong>Requisitos técnicos:</strong> APK o AAB, íconos en diferentes resoluciones, capturas de pantalla</li>
+                    <li><strong>Políticas de contenido:</strong> Prohibido contenido malicioso, spam, infracción de derechos</li>
+                    <li><strong>Proceso de revisión:</strong> Generalmente automático, puede tomar horas</li>
+                </ul>
+
+                <h4>Apple App Store</h4>
+                <ul>
+                    <li><strong>Requisitos técnicos:</strong> IPA, compatibilidad con versiones recientes de iOS</li>
+                    <li><strong>Políticas de contenido:</strong> Estrictas directrices de diseño y funcionalidad</li>
+                    <li><strong>Proceso de revisión:</strong> Revisión manual que puede tomar días</li>
+                </ul>
+
+                <div class="image-container">
+                    <img src="app.webp" alt="Plataformas y Canales de Distribución" class="content-image">
+                    <p class="image-caption">Figura 1: Plataformas y Canales de Distribución</p>
+                </div>
+            </div>
+
+            <div class="content-section">
+                <h3>Canales de Distribución</h3>
+                <p>Diferentes formas de distribuir aplicaciones:</p>
+                <ul>
+                    <li><strong>Tiendas oficiales:</strong> Google Play Store, Apple App Store</li>
+                    <li><strong>Distribución empresarial:</strong> Para aplicaciones internas de empresas</li>
+                    <li><strong>Tiendas alternativas:</strong> Amazon Appstore, Samsung Galaxy Store</li>
+                    <li><strong>Distribución directa:</strong> Descarga directa desde un sitio web (solo Android)</li>
+                </ul>
+            </div>
+
+            <div class="content-section">
+                <h3>Escenarios de Uso de Plataformas y Canales</h3>
+                <p>Cómo seleccionar la estrategia de distribución adecuada:</p>
+                <ul>
+                    <li><strong>Aplicaciones públicas:</strong> Tiendas oficiales para máximo alcance</li>
+                    <li><strong>Aplicaciones empresariales:</strong> Distribución interna o MDM (Mobile Device Management)</li>
+                    <li><strong>Betas cerradas:</strong> TestFlight, Firebase App Distribution</li>
+                    <li><strong>Mercados específicos:</strong> Tiendas alternativas para regiones particulares</li>
+                </ul>
+            </div>
+
+            <div class="content-section">
+                <h3>Tipos de Pruebas para la Distribución de Apps</h3>
+                <p>Estrategias de testing antes del lanzamiento:</p>
+                <ul>
+                    <li><strong>Pruebas internas:</strong> Realizadas por el equipo de desarrollo</li>
+                    <li><strong>Pruebas cerradas:</strong> Grupo limitado de testers externos</li>
+                    <li><strong>Pruebas abiertas:</strong> Cualquier usuario puede unirse como tester</li>
+                    <li><strong>Pruebas A/B:</strong> Distribuir diferentes versiones a grupos de usuarios</li>
+                </ul>
+            </div>
+
+            <div class="references">
+                <h3>Referencias</h3>
+                <ul>
+                    <li><a href="https://developer.android.com/distribute" target="_blank">Android App Distribution</a></li>
+                    <li><a href="https://developer.apple.com/app-store/review/guidelines/" target="_blank">App Store Review Guidelines</a></li>
+                    <li><a href="https://firebase.google.com/products/app-distribution" target="_blank">Firebase App Distribution</a></li>
+                </ul>
+            </div>
+
+            <div class="nav-buttons">
+                <button onclick="mostrarSeccion('tema5')" class="secundario">
+                    <i class="fas fa-arrow-left btn-icon"></i> Anterior
+                </button>
+                <button onclick="mostrarSeccion('menu')">
+                    <i class="fas fa-home btn-icon"></i> Volver al Menú
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('service-worker.js')
+      .then(reg => console.log('Service Worker registrado', reg))
+      .catch(err => console.log('Error registrando Service Worker', err));
+  });
+}
+</script>
+
+<script>
+    // Variables globales para el control de navegación
+    const secciones = ['inicio', 'login', 'registro', 'menu', 'tema1', 'tema2', 'tema3', 'tema4', 'tema5', 'tema6'];
+    const progresoPorSeccion = {
+        'inicio': 0,
+        'login': 10,
+        'registro': 10,
+        'menu': 20,
+        'tema1': 30,
+        'tema2': 45,
+        'tema3': 60,
+        'tema4': 75,
+        'tema5': 90,
+        'tema6': 100
+    };
+
+    // Ocultar todas las secciones y mostrar solo la especificada
+    function mostrarSeccion(id) {
+        secciones.forEach(seccion => {
+            document.getElementById(seccion).classList.remove('active');
+        });
+        document.getElementById(id).classList.add('active');
+
+        // Actualizar barra de progreso
+        document.getElementById('progress').style.width = progresoPorSeccion[id] + '%';
+
+        // Actualizar nombre de usuario si está en el menú
+        if (id === 'menu') {
+            const usuario = localStorage.getItem('sesion');
+            if (usuario) {
+                document.getElementById('nombreUsuario').textContent = usuario;
+            }
+        }
+
+        // Scroll al inicio de la página
+        window.scrollTo(0, 0);
+    }
+
+    // Función para registrar un nuevo usuario
+    function registrar() {
+        const usuario = document.getElementById('regUser').value.trim();
+        const contrasena = document.getElementById('regPass').value.trim();
+        const msgElement = document.getElementById('regMsg');
+
+        if (!usuario || !contrasena) {
+            msgElement.textContent = 'Por favor, completa todos los campos';
+            msgElement.className = 'msg error';
+            return;
+        }
+
+        // Verificar si el usuario ya existe
+        if (localStorage.getItem('usuario_' + usuario)) {
+            msgElement.textContent = 'Este usuario ya existe';
+            msgElement.className = 'msg error';
+            return;
+        }
+
+        // Registrar usuario
+        localStorage.setItem('usuario_' + usuario, contrasena);
+        msgElement.textContent = 'Usuario registrado correctamente';
+        msgElement.className = 'msg success';
+
+        // Limpiar campos
+        document.getElementById('regUser').value = '';
+        document.getElementById('regPass').value = '';
+
+        // Redirigir al login después de un breve tiempo
+        setTimeout(() => {
+            mostrarSeccion('login');
+        }, 1500);
+    }
+
+    // Función para iniciar sesión
+    function login() {
+        const usuario = document.getElementById('loginUser').value.trim();
+        const contrasena = document.getElementById('loginPass').value.trim();
+        const msgElement = document.getElementById('loginMsg');
+
+        if (!usuario || !contrasena) {
+            msgElement.textContent = 'Por favor, completa todos los campos';
+            msgElement.className = 'msg error';
+            return;
+        }
+
+        // Verificar credenciales
+        const contrasenaGuardada = localStorage.getItem('usuario_' + usuario);
+
+        if (contrasenaGuardada === contrasena) {
+            localStorage.setItem('sesion', usuario);
+            mostrarSeccion('menu');
+        } else {
+            msgElement.textContent = 'Usuario o contraseña incorrectos';
+            msgElement.className = 'msg error';
+        }
+    }
+
+    // Función para cerrar sesión
+    function cerrarSesion() {
+        localStorage.removeItem('sesion');
+        mostrarSeccion('inicio');
+    }
+
+    // Verificar si hay una sesión activa al cargar la página
+    window.onload = function() {
+        if (localStorage.getItem('sesion')) {
+            mostrarSeccion('menu');
+        } else {
+            mostrarSeccion('inicio');
+        }
+    };
+    
+</script>
+<!-- Agrega este script justo antes de tu cierre de </body> -->
+<script>
+let db;
+
+async function initDB() {
+    const SQL = await initSqlJs({
+        locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/${file}`
+    });
+
+    // Cargar base de datos desde localStorage si existe
+    const data = localStorage.getItem('db');
+    if (data) {
+        const buffer = Uint8Array.from(atob(data), c => c.charCodeAt(0));
+        db = new SQL.Database(buffer);
+    } else {
+        db = new SQL.Database();
+        db.run(`
+            CREATE TABLE usuarios (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                usuario TEXT UNIQUE,
+                contrasena TEXT,
+                progreso INTEGER DEFAULT 0
+            );
+        `);
+        guardarDB();
+    }
+}
+
+// Guardar DB en localStorage
+function guardarDB() {
+    const data = db.export();
+    const str = btoa(String.fromCharCode(...data));
+    localStorage.setItem('db', str);
+}
+
+// Registrar usuario
+function registrar() {
+    const usuario = document.getElementById('regUser').value.trim();
+    const contrasena = document.getElementById('regPass').value.trim();
+    const msgElement = document.getElementById('regMsg');
+
+    if (!usuario || !contrasena) {
+        msgElement.textContent = 'Por favor, completa todos los campos';
+        msgElement.className = 'msg error';
+        return;
+    }
+
+    try {
+        db.run('INSERT INTO usuarios (usuario, contrasena) VALUES (?, ?)', [usuario, contrasena]);
+        guardarDB();
+        msgElement.textContent = 'Usuario registrado correctamente';
+        msgElement.className = 'msg success';
+        setTimeout(() => mostrarSeccion('login'), 1500);
+    } catch(e) {
+        msgElement.textContent = 'Este usuario ya existe';
+        msgElement.className = 'msg error';
+    }
+
+    document.getElementById('regUser').value = '';
+    document.getElementById('regPass').value = '';
+}
+
+// Login
+function login() {
+    const usuario = document.getElementById('loginUser').value.trim();
+    const contrasena = document.getElementById('loginPass').value.trim();
+    const msgElement = document.getElementById('loginMsg');
+
+    if (!usuario || !contrasena) {
+        msgElement.textContent = 'Por favor, completa todos los campos';
+        msgElement.className = 'msg error';
+        return;
+    }
+
+    const stmt = db.prepare('SELECT * FROM usuarios WHERE usuario = ? AND contrasena = ?');
+    stmt.bind([usuario, contrasena]);
+
+    if (stmt.step()) {
+        localStorage.setItem('sesion', usuario);
+        mostrarSeccion('menu');
+    } else {
+        msgElement.textContent = 'Usuario o contraseña incorrectos';
+        msgElement.className = 'msg error';
+    }
+    stmt.free();
+}
+
+// Cerrar sesión
+function cerrarSesion() {
+    localStorage.removeItem('sesion');
+    mostrarSeccion('inicio');
+}
+
+// Actualizar progreso por sección
+function actualizarProgreso(seccion) {
+    const usuario = localStorage.getItem('sesion');
+    if (!usuario) return;
+    const progreso = progresoPorSeccion[seccion];
+    db.run('UPDATE usuarios SET progreso = ? WHERE usuario = ?', [progreso, usuario]);
+    guardarDB();
+}
+
+// Sobrescribir mostrarSeccion para incluir progreso
+function mostrarSeccion(id) {
+    secciones.forEach(seccion => {
+        document.getElementById(seccion).classList.remove('active');
+    });
+    document.getElementById(id).classList.add('active');
+
+    // Actualizar barra de progreso
+    document.getElementById('progress').style.width = progresoPorSeccion[id] + '%';
+
+    // Actualizar nombre de usuario si está en menú
+    if (id === 'menu') {
+        const usuario = localStorage.getItem('sesion');
+        if (usuario) {
+            document.getElementById('nombreUsuario').textContent = usuario;
+        }
+    }
+
+    // Guardar progreso
+    actualizarProgreso(id);
+
+    window.scrollTo(0, 0);
+}
+
+// Inicializar DB y mostrar sección correcta
+window.onload = async function() {
+    await initDB();
+    if (localStorage.getItem('sesion')) {
+        mostrarSeccion('menu');
+    } else {
+        mostrarSeccion('inicio');
+    }
+};
+</script>
+
+</body>
+</html>
