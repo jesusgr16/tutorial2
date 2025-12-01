@@ -1,19 +1,22 @@
 const CACHE_NAME = 'tutorial-cache-v1';
 const FILES_TO_CACHE = [
-  '/',
-  '/index.html',
-  '/styles.css',          // si separaste tu CSS
-  '/script.js',           // si separaste tu JS
-  '/assets/sqljs/sql-wasm.js',
-  '/assets/fontawesome/css/all.min.css',
-  '/assets/icons/hola.jpg',
-  '/assets/icons/hol2.png',
-  '/R.jpeg',
-  '/noti.webp',
-  '/OIP.webp',
-  '/htrh.webp',
-  '/hello.avif',
-  '/app.webp'
+  '/',
+  '/index.html',
+  '/styles.css',          
+  '/script.js',           
+  'manifest.json', // Recomendado agregar el manifest
+  // ¡Rutas de CDN!
+  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
+  'https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js',
+  // ... el resto de tus archivos locales
+  '/assets/icons/hola.jpg',
+  '/assets/icons/hol2.png',
+  '/R.jpeg',
+  '/noti.webp',
+  '/OIP.webp',
+  '/htrh.webp',
+  '/hello.avif',
+  '/app.webp'
 ];
 
 self.addEventListener('install', event => {
@@ -47,3 +50,4 @@ self.addEventListener('fetch', event => {
     })
   );
 });
+
