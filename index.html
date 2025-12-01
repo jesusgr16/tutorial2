@@ -1044,57 +1044,46 @@ function guardarDB() {
     localStorage.setItem('db', str);
 }
 
-// Registrar usuario
 function registrar() {
-    const usuario = document.getElementById('regUser').value.trim();
-    const contrasena = document.getElementById('regPass').value.trim();
-    const msgElement = document.getElementById('regMsg');
+    let form = new FormData();
+    form.append("usuario", document.getElementById("regUser").value);
+    form.append("password", document.getElementById("regPass").value);
 
-    if (!usuario || !contrasena) {
-        msgElement.textContent = 'Por favor, completa todos los campos';
-        msgElement.className = 'msg error';
-        return;
-    }
-
-    try {
-        db.run('INSERT INTO usuarios (usuario, contrasena) VALUES (?, ?)', [usuario, contrasena]);
-        guardarDB();
-        msgElement.textContent = 'Usuario registrado correctamente';
-        msgElement.className = 'msg success';
-        setTimeout(() => mostrarSeccion('login'), 1500);
-    } catch(e) {
-        msgElement.textContent = 'Este usuario ya existe';
-        msgElement.className = 'msg error';
-    }
-
-    document.getElementById('regUser').value = '';
-    document.getElementById('regPass').value = '';
+    fetch("registro.php", {
+        method: "POST",
+        body: form
+    })
+    .then(r => r.text())
+    .then(data => {
+        if (data === "OK") {
+            document.getElementById("regMsg").innerHTML = "Usuario registrado";
+        } else {
+            document.getElementById("regMsg").innerHTML = "Error al registrar";
+        }
+    });
 }
 
-// Login
+
 function login() {
-    const usuario = document.getElementById('loginUser').value.trim();
-    const contrasena = document.getElementById('loginPass').value.trim();
-    const msgElement = document.getElementById('loginMsg');
+    let form = new FormData();
+    form.append("usuario", document.getElementById("loginUser").value);
+    form.append("password", document.getElementById("loginPass").value);
 
-    if (!usuario || !contrasena) {
-        msgElement.textContent = 'Por favor, completa todos los campos';
-        msgElement.className = 'msg error';
-        return;
-    }
-
-    const stmt = db.prepare('SELECT * FROM usuarios WHERE usuario = ? AND contrasena = ?');
-    stmt.bind([usuario, contrasena]);
-
-    if (stmt.step()) {
-        localStorage.setItem('sesion', usuario);
-        mostrarSeccion('menu');
-    } else {
-        msgElement.textContent = 'Usuario o contraseña incorrectos';
-        msgElement.className = 'msg error';
-    }
-    stmt.free();
+    fetch("login.php", {
+        method: "POST",
+        body: form
+    })
+    .then(r => r.text())
+    .then(data => {
+        if (data === "OK") {
+            mostrarSeccion('menu');
+            document.getElementById("nombreUsuario").innerText = document.getElementById("loginUser").value;
+        } else {
+            document.getElementById("loginMsg").innerHTML = "Usuario o contraseña incorrectos";
+        }
+    });
 }
+
 
 // Cerrar sesión
 function cerrarSesion() {
